@@ -28,8 +28,8 @@ export default function Navbar() {
   // it seems.
   return (
     <ReactNavbar bg="dark" variant="dark">
-    <Container>
-      <Nav className="me-auto">
+    <Container >
+      <Nav className="m-auto">
         <Nav.Link href="/">Start</Nav.Link>
         <Nav.Link href="/home">Home</Nav.Link>
         <Nav.Link href="/mbtaAlerts">MBTA Alerts</Nav.Link>

@@ -56,7 +56,7 @@ const Login = () => {
       const { accessToken } = res;
       //store token in localStorage
       localStorage.setItem("accessToken", accessToken);
-      navigate("/home");
+      window.location.href = "/home";
     } catch (error) {
       if (
         error.response &&

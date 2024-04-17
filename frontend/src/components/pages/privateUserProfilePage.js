@@ -19,7 +19,7 @@ const PrivateUserProfile = () => {
   // handle logout button
   const handleLogout = (async) => {
     localStorage.clear();
-    navigate("/");
+    window.location.href = "/";
   };
 
   useEffect(() => {
