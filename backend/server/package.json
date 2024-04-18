@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "server": "nodemon server.js",
-    "test:user": "mocha test/tests-automated/userApiTests.js"
+    "test:user": "mocha test/tests-automated/userApiTests.js",
+    "test:fav": "mocha test/tests-automated/favoriteApiTests.js"
   },
   "repository": {
     "type": "git",

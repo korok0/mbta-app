@@ -39,7 +39,7 @@ app.use('/comments', createComments)
 app.use('/comments', deleteComments)
 app.use('/comments', editComments)
 
-
+console.log(`The node environment is: ${process.env.NODE_ENV}`);
 if (process.env.NODE_ENV !== "test") {
     dbConnection();
     app.listen(SERVER_PORT, () => {
