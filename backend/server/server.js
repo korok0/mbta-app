@@ -39,7 +39,14 @@ app.use('/comments', createComments)
 app.use('/comments', deleteComments)
 app.use('/comments', editComments)
 
+console.log(`The node environment is: ${process.env.NODE_ENV}`);
+if (process.env.NODE_ENV !== "test") {
+    dbConnection();
+    app.listen(SERVER_PORT, () => {
+      setTimeout(() => {
+        console.log(`All services are running on port: ${SERVER_PORT}`);
+      }, 1000); // Add a 1-second delay
+    });
+}
 
-app.listen(SERVER_PORT, (req, res) => {
-    console.log(`The backend service is running on port ${SERVER_PORT} and waiting for requests.`);
-})
+module.exports = app;
