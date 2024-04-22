@@ -11,7 +11,11 @@ const HomePage = () => {
     }
 
     useEffect(() => {
-        setUser(getUserInfo())
+        const info = getUserInfo()
+        if (typeof info !== 'undefined'){
+            setUser(getUserInfo())
+        }
+        
     }, [])
 
 

@@ -14,6 +14,7 @@ import L from "leaflet"
 import { useMap } from 'react-leaflet';
 import getUserInfo from '../../utilities/decodeJwt';
 import "../styles/Favorites.css"
+import Creatable from "react-select"
 
 function Favorites() {
   const [favs, setFav] = useState([]);
@@ -22,11 +23,11 @@ function Favorites() {
   const [show, setShow] = useState(false);
   const [selectedFavorite, setSelectedFav] = useState('')
   const [mapState, setMapState] = useState(null)
-  
+  const [showDirMenu, setShowDirMenu] = useState(false)
   const loggedUser = getUserInfo()
   // Marker State [start, end] - 0 and 1
   const [markerState, setMarkerState] = useState([])
-
+  const [addFav, setAddFav] = useState('')
   // not a favorite but a list of directions in a route found using the favoriteName
   const [modalFavDir, setModalFavDir] = useState([])
   const [fInfo, fInfoSet] = useState(false)
@@ -37,6 +38,17 @@ function Favorites() {
   const [pageLoaded, setPageLoaded] = useState(false)
   const [viewingSelf, setViewingSelf] = useState(false)
   const url = `${process.env.REACT_APP_BACKEND_SERVER_URI}`
+  const [routes, setRoutes] = useState([])
+  const [addButton, setAddButton] = useState(false)
+  useEffect(()=>{
+    async function getRoutes(){
+        const result = await axios.get("https://api-v3.mbta.com/routes")
+        setRoutes(result.data.data.map(route=>(
+            {value: route.id, label: `${route.attributes.long_name} | ${route.id}`, directions: route?.attributes.direction_names.map(dir=>({value: dir, label: dir}))}
+        )))
+    }
+    getRoutes()
+  }, [])
   useEffect(() => {
     document.title = "Favorites Page"
     document.icon = "../../images/marker-icon.png"
@@ -241,10 +253,57 @@ function mapTest(fav){
   }
   getStops()
 }
+function addForm(e){
+  e.preventDefault()
+  let formData = new FormData(e.target)
+  
+  let route = Object.fromEntries(formData.entries())
+  console.log(route.routeID)
+  console.log(route.direction)
+  console.log("hey")
+  async function addFavorite(){
+    console.log(username)
+    console.log(route.routeID)
+    console.log(route.direction)
+    try{
 
+    
+    const result = await axios.post(`${url}/favorites/create`, {username: username, favoriteName: route.routeID, direction: route.direction})
+    setFav([...favs, result.data])
+    }
+    catch(error){
+      console.log("error")
+    }
+  }
+  addFavorite()
+  
+  // close directions select menu
+  handleCloseDir()
+  setAddButton(false)
+  setAddFav(null)
+  
+
+}
+
+const handleShowDir = () => setShowDirMenu(true)
+const handleCloseDir = (e) => 
+  setShowDirMenu(false)
+  
+function creatableChange(e){
+  setAddFav(e)
+  handleShowDir()
+}
+const enableAddButton = ()=> setAddButton(true)
 return (
-  <div className="main" style={{display:"flex", boxSizing:"content-box"}}>
+  <div className="main">
+    <Form onSubmit={addForm}>
+    <Creatable onChange={(e)=>creatableChange(e)} name="routeID" value={addFav} isClearable id="creatable" options={routes} placeholder="Add Route"/>
+    
+    {showDirMenu && (<Creatable isClearable onChange={enableAddButton} name="direction" id="creatable" options={addFav?.directions} placeholder="Add Direction" />)}
+    <Button type='submit' disabled={!addButton}>Add</Button>
+    </Form>
   <div className ="cardColumn">
+    
     {pageLoaded && (
       <>
     <Card
@@ -252,6 +311,7 @@ return (
     key={
       'searchBarCard'
     }
+    className='searchContainer'
     >
   
     <Card.Body>
@@ -315,7 +375,7 @@ return (
               <Form onSubmit={modalSubmit}>
                 <Form.Label>Route</Form.Label>
                 <Form.Label></Form.Label>
-                <Form.Control type='text' name='favorite' value={selectedFavorite.favoriteName} readOnly placeholder={searchFavorite.favoriteName}></Form.Control>
+                <Form.Control type='text' name='favorite' value={selectedFavorite?.favoriteName} readOnly placeholder={searchFavorite?.favoriteName}></Form.Control>
                 <Form.Label>Direction</Form.Label>
                 <Form.Select defaultValue={'default'} name='direction' onChange={modalSubmitChange}>
                   
@@ -338,17 +398,10 @@ return (
       )))
     }
     </div>
-    
-    
-  
-  </>
-    )}
+  </>)}
   </div>
-
-
-  
   <div className="mapDiv"  >
-  <MapContainer style={{height: "inherit", width:"inherit"}} center={[42.5030595,-70.890669]} zoom={11}>
+  <MapContainer className="map" center={[42.5030595,-70.890669]} zoom={11}>
       <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'>
       

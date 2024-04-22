@@ -27,19 +27,21 @@ export default function Navbar() {
   // we have an issue with getUserInfo() returning null after a few minutes
   // it seems.
   return (
-    <ReactNavbar bg="dark" variant="dark">
-    <Container >
-      <Nav className="m-auto">
-        <Nav.Link href="/">Start</Nav.Link>
-        <Nav.Link href="/home">Home</Nav.Link>
-        <Nav.Link href="/mbtaAlerts">MBTA Alerts</Nav.Link>
-        <Nav.Link href={`/favorites/${username}`}>Favorites</Nav.Link>
-        <Nav.Link href={`/map`}>Map</Nav.Link>
-        <Nav.Link href="/mbtaMyPage">My Page</Nav.Link>
-        <Nav.Link href="/privateUserProfile">Profile</Nav.Link>
-      </Nav>
-    </Container>
-  </ReactNavbar>
+    <div id="mt">
+      <ReactNavbar bg="dark" variant="dark" id="ida">
+      <Container >
+        <Nav className="m-auto">
+          <Nav.Link href="/">Start</Nav.Link>
+          <Nav.Link href="/home">Home</Nav.Link>
+          <Nav.Link href="/mbtaAlerts">MBTA Alerts</Nav.Link>
+          <Nav.Link href={`/favorites/${username}`}>Favorites</Nav.Link>
+          <Nav.Link href={`/map`}>Map</Nav.Link>
+          <Nav.Link href="/mbtaMyPage">My Page</Nav.Link>
+          <Nav.Link href="/privateUserProfile">Profile</Nav.Link>
+        </Nav>
+      </Container>
+    </ReactNavbar>
+    </div>
 
   );
 }

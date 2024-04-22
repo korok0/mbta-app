@@ -17,7 +17,7 @@ import Signup from "./components/pages/registerPage";
 import PrivateUserProfile from "./components/pages/privateUserProfilePage";
 import { createContext, useState, useEffect } from "react";
 import getUserInfo from "./utilities/decodeJwt";
-
+import "./components/styles/Favorites.css"
 export const UserContext = createContext();
 //test change
 //test again
@@ -30,7 +30,7 @@ const App = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar username={user?.username || ''}  />
       <UserContext.Provider value={user}>
         <Routes>
           <Route exact path="/" element={<LandingPage />} />
