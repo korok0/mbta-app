@@ -461,7 +461,7 @@ return (
             iconSize: [20, 30]
           })}>
             <Popup>
-             Start - {markerInfo[0].attributes.address || markerInfo[0].attributes.at_street || markerInfo[0].attributes.on_street}
+             Start - {markerInfo[0].attributes.address || markerInfo[0].attributes.at_street || markerInfo[0].attributes.on_street || markerInfo[0].attributes.name}
             </Popup>
           </Marker>
           <Marker position={markerState[1]} icon={L.icon({
@@ -469,7 +469,7 @@ return (
             iconSize: [30, 30]
           })}>
             <Popup>
-              Dest. - {markerInfo[1].attributes.address || markerInfo[1].attributes.at_street || markerInfo[1].attributes.on_street}
+              Dest. - {markerInfo[1].attributes.address || markerInfo[1].attributes.at_street || markerInfo[1].attributes.on_street || markerInfo[1].attributes.name}
             </Popup>
           </Marker>
           </>
