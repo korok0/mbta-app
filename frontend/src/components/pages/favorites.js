@@ -187,6 +187,7 @@ function deleteButtonClick(fav){
 
   }
   setMapState(null)
+  setVehicles([])
   deleteData()
   setReload(true)
 
@@ -238,6 +239,8 @@ function modalSubmit(e){
   editFavorite()
   setMapState(null)
   setModalSubmit(true)
+  setVehicles([])
+
 
 }
 const modalSubmitChange = (e)=>{
@@ -343,12 +346,12 @@ function getTime(time){
 }
 return (
   <div className="main">
-    <Form onSubmit={addForm}>
+    {viewingSelf && (<Form onSubmit={addForm}>
     <Creatable onChange={(e)=>creatableChange(e)} name="routeID" value={addFav} isClearable id="creatable" options={routes} placeholder="Add Route"/>
     
     {showDirMenu && (<Creatable isClearable onChange={enableAddButton} name="direction" id="creatable" options={addFav?.directions} placeholder="Add Direction" />)}
     <Button type='submit' disabled={!addButton}>Add</Button>
-    </Form>
+    </Form>)}
   <div className ="cardColumn">
     
     {pageLoaded && (
