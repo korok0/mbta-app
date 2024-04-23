@@ -33,22 +33,32 @@ function Favorites() {
   const [fInfo, fInfoSet] = useState(false)
   const [modalSubmitDisabled, setModalSubmit] = useState(true)
   const [lineID, setLine] = useState({})
-  const [markerInfo, setMarkerInfo] = useState(null)
+  const [markerInfo, setMarkerInfo] = useState([])
   const [reload, setReload] = useState(false)
   const [pageLoaded, setPageLoaded] = useState(false)
   const [viewingSelf, setViewingSelf] = useState(false)
   const url = `${process.env.REACT_APP_BACKEND_SERVER_URI}`
   const [routes, setRoutes] = useState([])
   const [addButton, setAddButton] = useState(false)
+  const [vehicles, setVehicles] = useState([])
+  const [currentMap, setCurrentMap] = useState(null)
+  const [stops, setVehiclesStops] = useState([])
   useEffect(()=>{
     async function getRoutes(){
+      try{
         const result = await axios.get("https://api-v3.mbta.com/routes")
         setRoutes(result.data.data.map(route=>(
             {value: route.id, label: `${route.attributes.long_name} | ${route.id}`, directions: route?.attributes.direction_names.map(dir=>({value: dir, label: dir}))}
         )))
+
+      }
+      catch(error){
+        console.log(error)
+      }
     }
-    getRoutes()
+      getRoutes()
   }, [])
+
   useEffect(() => {
     document.title = "Favorites Page"
     document.icon = "../../images/marker-icon.png"
@@ -240,15 +250,21 @@ const modalSubmitChange = (e)=>{
 function mapTest(fav){
   async function getStops(){
     let direction_id = (fav.direction === "Outbound" || fav.direction === "West" || fav.direction === "South") ? 0: 1
-    const result = await axios.get(`https://api-v3.mbta.com/stops?filter[route]=${fav.favoriteName}&filter[direction_id]=${direction_id}`,)
-    const newL = result.data.data.map(item => [item.attributes.latitude, item.attributes.longitude])
-    const sc = newL[0]
-    const ec = newL.at(-1)
-    const start = result.data.data[0]
-    const end = result.data.data.at(-1)
-    setMapState(newL)
-    setMarkerInfo([start, end])
-    setMarkerState([sc, ec])
+    try{
+      const result = await axios.get(`https://api-v3.mbta.com/stops?filter[route]=${fav.favoriteName}&filter[direction_id]=${direction_id}`,)
+      const newL = result.data.data.map(item => [item.attributes.latitude, item.attributes.longitude])
+      const sc = newL[0]
+      const ec = newL.at(-1)
+      const start = result.data.data[0]
+      const end = result.data.data.at(-1)
+      setMapState(newL)
+      setCurrentMap(fav)
+      setMarkerInfo([start, end])
+      setMarkerState([sc, ec])
+      setVehicles([])
+    }catch(error){
+      console.log(error)
+    }
 
   }
   getStops()
@@ -256,8 +272,21 @@ function mapTest(fav){
 function mapVehicles(fav){
   async function getVehicles(){
     let direction_id = (fav.direction === "Outbound" || fav.direction === "West" || fav.direction === "South") ? 0: 1
-    const result = await axios.get(`https://api-v3.mbta.com/vehicles?filter[route]=${fav.favoriteName}&filter[direction_id]=${direction_id}`,)
-    console.log(result.data.data)
+    try{
+      const result = await axios.get(`https://api-v3.mbta.com/vehicles?include=stop&filter[route]=${fav.favoriteName}&filter[direction_id]=${direction_id}`,)
+    
+
+      // they should same order so they can be accessed by index when mapping
+      if (result.data.data !== undefined && result.data.included !== undefined){
+        setVehicles(result.data.data)
+        setVehiclesStops(result.data.included)
+      }
+      console.log(result.data)
+      console.log(result.data.included)
+    }catch(error){
+      console.log(error)
+    }
+
   }
   getVehicles()
 }
@@ -302,6 +331,16 @@ function creatableChange(e){
   handleShowDir()
 }
 const enableAddButton = ()=> setAddButton(true)
+function getTime(time){
+  const date = new Date(time)
+  const hours = date.getHours()
+  const pmOrAm = (hours >=12? "pm": "am")
+  let minutes = date.getMinutes()
+  if (minutes < 10){
+    minutes = `0${minutes}`
+  }
+  return (`${hours}:${minutes} ${pmOrAm}`)
+}
 return (
   <div className="main">
     <Form onSubmit={addForm}>
@@ -360,7 +399,6 @@ return (
             Direction - {fav.direction} <br/>
           <ButtonGroup >
           <Button onClick={() => mapTest(fav)}>map</Button>
-          
           {viewingSelf && (
           <DropdownButton className="drop" as={ButtonGroup} title="manage" id="bg-nested-dropdown">
             <Dropdown.Item onClick={() => handleShow(fav)}>
@@ -438,7 +476,25 @@ return (
         )}\
         {/* Pass in start coordinates*/}
         {markerState.length >0 && (<RecenterMap markerState={markerState[0]}/>)}
+        {vehicles.length > 0 && stops.length> 0 && (
+          vehicles.map((veh, index)=>(
+            <Marker position={[veh.attributes.latitude, veh.attributes.longitude]} icon={L.icon({
+              iconUrl: require("../../images/MBTA.png"),
+              iconSize: [40, 40]
+            })}>
+              <Popup>
+                Stop - {(stops.length === vehicles.length ? stops[index]?.attributes?.name: stops[0]?.attributes?.name)}
+                <br/>
+                Last Updated - {(getTime(veh.attributes.updated_at))}
+              </Popup>
+
+            </Marker>
+            
+          ))
+        )}
        </MapContainer>
+       <br></br>
+       <Button size="lg" style={{width: "100%"}} disabled={!mapState} onClick={() => mapVehicles(currentMap)}>Live</Button>
     </div>
     </div>
     );
