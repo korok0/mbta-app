@@ -253,6 +253,14 @@ function mapTest(fav){
   }
   getStops()
 }
+function mapVehicles(fav){
+  async function getVehicles(){
+    let direction_id = (fav.direction === "Outbound" || fav.direction === "West" || fav.direction === "South") ? 0: 1
+    const result = await axios.get(`https://api-v3.mbta.com/vehicles?filter[route]=${fav.favoriteName}&filter[direction_id]=${direction_id}`,)
+    console.log(result.data.data)
+  }
+  getVehicles()
+}
 function addForm(e){
   e.preventDefault()
   let formData = new FormData(e.target)
