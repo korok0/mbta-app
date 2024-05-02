@@ -63,10 +63,14 @@ function Favorites() {
     document.title = "Favorites Page"
     document.icon = "../../images/marker-icon.png"
     async function fetchData() {
-      const result = await axios.get(
-        `${url}/favorites/${username}`,
-      );
-      setFav(result.data);
+      try{
+        const result = await axios.get(
+          `${url}/favorites/${username}`,
+        );
+        setFav(result.data);
+      }catch(error){
+        console.log("error")
+      }
     }
     fetchData();
     if (loggedUser !== undefined){
@@ -337,12 +341,11 @@ const enableAddButton = ()=> setAddButton(true)
 function getTime(time){
   const date = new Date(time)
   const hours = date.getHours()
-  const pmOrAm = (hours >=12? "pm": "am")
   let minutes = date.getMinutes()
   if (minutes < 10){
     minutes = `0${minutes}`
   }
-  return (`${hours}:${minutes} ${pmOrAm}`)
+  return (`${hours}:${minutes}`)
 }
 return (
   <div className="main">

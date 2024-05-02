@@ -36,6 +36,7 @@ const PrivateUserProfile = () => {
         <h1>{user && user.username}</h1>
         <div class="col-md-12 text-center">
           <>
+            <Button className="me-2" onClick={()=>{window.location.href = `/favorites/${user.username}`}}>Favorites</Button>
             <Button className="me-2" onClick={handleShow}>
               Log Out
             </Button>
