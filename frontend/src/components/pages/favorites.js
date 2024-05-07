@@ -32,7 +32,6 @@ function Favorites() {
   const [modalFavDir, setModalFavDir] = useState([])
   const [fInfo, fInfoSet] = useState(false)
   const [modalSubmitDisabled, setModalSubmit] = useState(true)
-  const [lineID, setLine] = useState({})
   const [markerInfo, setMarkerInfo] = useState([])
   const [reload, setReload] = useState(false)
   const [pageLoaded, setPageLoaded] = useState(false)
@@ -43,6 +42,7 @@ function Favorites() {
   const [vehicles, setVehicles] = useState([])
   const [currentMap, setCurrentMap] = useState(null)
   const [stops, setVehiclesStops] = useState([])
+  const [lineInfo, setLineInfo] = useState([])
   useEffect(()=>{
     async function getRoutes(){
       try{
@@ -85,15 +85,34 @@ useEffect(() => {
   
   async function mapFavs(){
     const favIds = favs.map(fav =>fav.favoriteName)
-    const routes = await getFavRouteInfo(favIds.join(','))
-    if (routes === null) return
+    const routesInfo = await getFavRouteInfo(favIds.join(','))
+
+    // unpack route info
+    const routes = routesInfo[0]
+    const lines = routesInfo[1]
+    if (routes === null || lines === null) return
+
     // order the routes to match order of favIds
-    const orderedData = favIds.map(id => routes.find(route => parseInt(route.id) === id || route.id === id))
-    const updatedState = {} 
-    favIds.forEach((id, index) => updatedState[id] = orderedData[index])
+    const orderedRouteData = favIds.map(id => routes.find(route => parseInt(route.id) === id || route.id === id))
+
+    // order the line information to follow the route order
+    const orderedLineData = orderedRouteData.map(route => lines.find(line => route.relationships.line.data.id === line.id))
+
+    const updatedRouteState = {} 
+    const updatedLineState = {}
+   
+    console.log("favIds Below")
+    console.log(favIds)
+    console.log(orderedRouteData)
+    console.log(orderedLineData)
+    favIds.forEach((id, index) => {
+      updatedLineState[id] = orderedLineData[index]
+      updatedRouteState[id] = orderedRouteData[index] 
+    })
 
     
-    fInfoSet(updatedState)
+    fInfoSet(updatedRouteState)
+    setLineInfo(updatedLineState)
   }
   
   if (favs.length > 0){
@@ -104,42 +123,15 @@ useEffect(() => {
   setPageLoaded(true)
 
 }, [favs])
-useEffect(()=>{
-  async function lines(){
-    for (const fav of favs){
-        const lineid = fInfo[fav.favoriteName]?.relationships?.line?.data?.id
-        //const lineid = 'line-Red'
-        const line = await getLineName(lineid)
-        if (line !== null){
-          setLine(oldState=>({...oldState, [fav.favoriteName]: line}))
-        }
-    }
-  }
-  
-    lines()
-  
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [fInfo])
-async function getLineName(id){
-  
-    if (id!== undefined){
-      try{
-        const result = await axios.get(`https://api-v3.mbta.com/lines/${id}`)
-        return (result.data.data.attributes.long_name)
-      }catch(error){
-        console.log(error)
-        return (null)
-      }
-    }
-  
-}
+
 async function getFavRouteInfo(id) {
     
       try{
-        const result = await axios.get(`https://api-v3.mbta.com/routes?filter[id]=${id}`,)
+        const result = await axios.get(`https://api-v3.mbta.com/routes?filter[id]=${id}&include=line`,)
         const routeInfo = result.data.data
-       
-        return (routeInfo)}
+        const included = result.data.included
+
+        return ([routeInfo, included])}
       catch(error){
         console.log(error)
         return(null)
@@ -254,7 +246,7 @@ const modalSubmitChange = (e)=>{
     setModalSubmit(true)
   }
 }
-function mapTest(fav){
+function mapStops(fav){
   async function getStops(){
     let direction_id = (fav.direction === "Outbound" || fav.direction === "West" || fav.direction === "South") ? 0: 1
     try{
@@ -288,8 +280,6 @@ function mapVehicles(fav){
         setVehicles(result.data.data)
         setVehiclesStops(result.data.included)
       }
-      console.log(result.data)
-      console.log(result.data.included)
     }catch(error){
       console.log(error)
     }
@@ -302,13 +292,8 @@ function addForm(e){
   let formData = new FormData(e.target)
   
   let route = Object.fromEntries(formData.entries())
-  console.log(route.routeID)
-  console.log(route.direction)
-  console.log("hey")
+
   async function addFavorite(){
-    console.log(username)
-    console.log(route.routeID)
-    console.log(route.direction)
     try{
 
     
@@ -395,16 +380,20 @@ return (
       >
         <Card.Body>
         <Card.Title>
-          Route - {fav.favoriteName}<br/>
-          Line - {lineID[fav.favoriteName]}
+          {fInfo && lineInfo && (
+            <>
+            Line - <span style={{color:`#${lineInfo[fav.favoriteName]?.attributes.color}`}}>{lineInfo[fav.favoriteName]?.attributes.long_name}</span><br/>
+            Route - <span style={{color:"#708090"}}>{fInfo[fav.favoriteName]?.id}</span>
+            </>
+            )}
         </Card.Title>
         <Card.Text>
         
         {fInfo && (fInfo[fav.favoriteName]?.attributes.long_name)}<br/> 
-      
+            
             Direction - {fav.direction} <br/>
           <ButtonGroup >
-          <Button onClick={() => mapTest(fav)}>map</Button>
+          <Button onClick={() => mapStops(fav)}>map</Button>
           {viewingSelf && (
           <DropdownButton className="drop" as={ButtonGroup} title="manage" id="bg-nested-dropdown">
             <Dropdown.Item onClick={() => handleShow(fav)}>
@@ -489,9 +478,10 @@ return (
               iconSize: [40, 40]
             })}>
               <Popup>
-                Stop - {(stops.length === vehicles.length ? stops[index]?.attributes?.name: stops[0]?.attributes?.name)}
+                {veh.attributes.current_status} - {(stops.length === vehicles.length ? stops[index]?.attributes?.name: stops[0]?.attributes?.name)}
                 <br/>
-                Last Updated - {(getTime(veh.attributes.updated_at))}
+                Last Updated - {(getTime(veh.attributes.updated_at))}<br/>
+                {veh.attributes.occupancy_status}
               </Popup>
 
             </Marker>

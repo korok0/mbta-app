@@ -19,7 +19,7 @@ function UsersMenu(){
             <Card style={{display: "flex", }}>
             <Card.Body>
                 <Card.Text style={{display: "flex"}}>
-                    <div style={{width: "fit-content"}}>{user.username}</div> <div style={{width: "fit-content", "marginLeft": "20px"}}><Button onClick={()=>{window.location.href = `/favorites/${user.username}`}}>View</Button></div>
+                    <div style={{width: "fit-content"}}>{user.username}</div> <div style={{width: "fit-content", "marginLeft": "20px"}}><Button onClick={()=>{window.location.href = `/favorites/${user.username}`}}>Favorites</Button></div>
                 </Card.Text>
             </Card.Body>
         </Card>

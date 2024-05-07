@@ -13,7 +13,6 @@ import FavoritesPage from "./components/pages/favorites"
 import UsersMenu from "./components/pages/usersMenu";
 import CommentsPage from "./components/pages/comments";
 import MbtaMyPage from  "./components/pages/mbtaMyPage"
-import MapPage from "./components/pages/map"
 import Login from "./components/pages/loginPage";
 import Signup from "./components/pages/registerPage";
 import PrivateUserProfile from "./components/pages/privateUserProfilePage";
@@ -45,7 +44,6 @@ const App = () => {
           <Route exact path="/users" element={<UsersMenu/>}/>
           <Route exact path="/comments/:username" element={<CommentsPage/>} />
           <Route path="/privateUserProfile" element={<PrivateUserProfile />} />
-          <Route exact path="/map" element={<MapPage />} />
         </Routes>
       </UserContext.Provider>
     </>
