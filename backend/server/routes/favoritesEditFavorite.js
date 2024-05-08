@@ -26,8 +26,8 @@ router.patch('/editFavorite', async (req, res) => {
                 
                 
                 // return updated resource
-                const newFav = await favoritesModel.find({username: username})
-                return res.json(newFav)
+                const updatedFav = await favoritesModel.find({username: username})
+                return res.json(updatedFav)
             }else{
                 res.status(450).send("This specific favorite already exists")
             }

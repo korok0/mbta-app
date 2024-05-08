@@ -101,10 +101,7 @@ useEffect(() => {
     const updatedRouteState = {} 
     const updatedLineState = {}
    
-    console.log("favIds Below")
-    console.log(favIds)
-    console.log(orderedRouteData)
-    console.log(orderedLineData)
+
     favIds.forEach((id, index) => {
       updatedLineState[id] = orderedLineData[index]
       updatedRouteState[id] = orderedRouteData[index] 
@@ -150,7 +147,6 @@ const handleShow = (fav) => {
     try{
       const result = await axios.get(`https://api-v3.mbta.com/routes/${fav.favoriteName}`,)
       const route = result.data.data
-      console.log(result.data)
       setModalFavDir(route.attributes.direction_names)
     }
     catch(error){
@@ -195,7 +191,7 @@ async function specificFavorite() {
     `${url}/favorites/${username}/${searchFavorite}`,
   );
   // update favorites
-  setFav(result.data);
+  setFav([result.data]);
   }
   catch (error){
     console.log(error)
@@ -366,9 +362,9 @@ return (
     </Card> 
     <div className='fav'>
     {/*Load cards only once fInfo has loaded*/}
-    
+   
     {Object.keys(fInfo).length > 0 && (
-      favs.map((fav) => (
+      favs.map((fav, index) => (
         <Card
         body
         color="success"

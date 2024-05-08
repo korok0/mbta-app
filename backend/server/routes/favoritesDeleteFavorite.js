@@ -21,8 +21,8 @@ router.delete('/deleteFavorite', async (req, res) => {
             // delete favorite
             await favoritesModel.findByIdAndDelete(fav)
             // return updated resource
-            const newFav = await favoritesModel.find({username: username})
-            return res.json(newFav)
+            const updatedFav = await favoritesModel.find({username: username})
+            return res.json(updatedFav)
         }
 
     }
