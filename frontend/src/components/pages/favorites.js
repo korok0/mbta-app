@@ -85,12 +85,14 @@ useEffect(() => {
   
   async function mapFavs(){
     const favIds = favs.map(fav =>fav.favoriteName)
+    console.log(favIds)
+    console.log(favs)
     const routesInfo = await getFavRouteInfo(favIds.join(','))
 
     // unpack route info
     const routes = routesInfo[0]
     const lines = routesInfo[1]
-    if (routes === null || lines === null) return
+    if (routes === null || lines === null || favIds === undefined) return
 
     // order the routes to match order of favIds
     const orderedRouteData = favIds.map(id => routes.find(route => parseInt(route.id) === id || route.id === id))
@@ -190,11 +192,13 @@ async function specificFavorite() {
   const result = await axios.get(
     `${url}/favorites/${username}/${searchFavorite}`,
   );
+
   // update favorites
-  setFav([result.data]);
+  setFav(result.data);
   }
   catch (error){
-    console.log(error)
+    console.log(error.response.data)
+    setFav([])
   }
   
 }

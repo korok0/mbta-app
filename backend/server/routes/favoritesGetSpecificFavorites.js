@@ -17,7 +17,7 @@ router.get('/:username/:favorite', async (req, res) => {
         if (!fav){
             res.status(409).send("Favorite not found")
         } else{
-            return res.json(fav)
+            return res.json([fav])
         }
 
     }
