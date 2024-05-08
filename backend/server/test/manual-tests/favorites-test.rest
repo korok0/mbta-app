@@ -1,24 +1,25 @@
-GET http://localhost:8081/favorites/marco
+GET http://localhost:8081/favorites/josue3
+###
+GET http://localhost:8081/favorites/josue3/455
 ###
 POST http://localhost:8081/favorites/create
 Content-Type: application/json
 
 {
-    "username": "marco",
-    "favoriteName": "Salem455",
-    "direction" : "outboundd"
+    "username": "josue3",
+    "favoriteName": "455",
+    "direction" : "Outbound"
 }
 ###
-
-GET http://localhost:8081/favorites/josue1/Salem455
+GET http://localhost:8081/favorites/josue3/455
 ###
 PATCH http://localhost:8081/favorites/editFavorite
 Content-Type: application/json
 
 {
-    "username": "josue1",
-    "favoriteName": "Salem455",
-    "direction" : "test"
+    "username": "josue3",
+    "favoriteName": "455",
+    "direction" : "Outbound"
 }
 ###
 DELETE http://localhost:8081/favorites/deleteFavorite
@@ -26,61 +27,8 @@ Content-Type: application/json
 
 {
     "username": "josue3",
-    "favoriteName": "RandomRoute73"
+    "favoriteName": "455"
 }
 ###
-POST http://localhost:8081/favorites/create
-Content-Type: application/json
-
-{
-    "username": "aaaaaa",
-    "favoriteName": "Salem99",
-    "direction" : "inbound"
-}
+GET http://localhost:8081/favorites/josue3/455
 ###
-POST http://localhost:8081/favorites/create
-Content-Type: application/json
-
-{
-    "username": "josue3",
-    "favoriteName": "fav4",
-    "direction" : "inbound"
-}
-###
-GET http://localhost:8081/favorites/josue3
-###
-POST http://localhost:8081/favorites/create
-Content-Type: application/json
-
-{
-    "username": "josue3",
-    "favoriteName": "fav10",
-    "direction" : "inbound"
-}
-###
-PATCH http://localhost:8081/favorites/editFavorite
-Content-Type: application/json
-
-{
-    "username": "josue3",
-    "favoriteName": "fav10",
-    "direction" : "test"
-}
-###
-POST http://localhost:8081/favorites/create
-Content-Type: application/json
-
-{
-    "username": "josue3",
-    "favoriteName": "Orange",
-    "direction" : "North"
-}
-###
-POST http://localhost:8081/favorites/create
-Content-Type: application/json
-
-{
-    "username": "josue3",
-    "favoriteName": "41",
-    "direction" : "Inbound"
-}

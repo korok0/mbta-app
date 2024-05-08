@@ -27,8 +27,10 @@ router.post('/create', async (req, res) => {
     
     try {
         const saveNewFav = await newFav.save()
+        // return updated resource
+        const updatedFav = await favoritesModel.find({username: username})
+        return res.json(updatedFav)
         
-        res.send(saveNewFav)
     } catch (error) {
         res.status(410).send({message: "Failed to create new favorite", error: error
     })
