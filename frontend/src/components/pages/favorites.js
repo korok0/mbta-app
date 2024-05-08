@@ -115,7 +115,11 @@ useEffect(() => {
   }
   
   if (favs.length > 0){
-    mapFavs()
+    try{
+      mapFavs()
+    }catch(error){
+      console.log(error)
+    }
   }else {
     console.log("0")
   }
@@ -200,6 +204,7 @@ async function specificFavorite() {
     console.log(error.response.data)
     setFav([])
   }
+  
   
 }
 function searchHandler(e){
@@ -298,7 +303,7 @@ function addForm(e){
 
     
     const result = await axios.post(`${url}/favorites/create`, {username: username, favoriteName: route.routeID, direction: route.direction})
-    setFav([...favs, result.data])
+    setFav(result.data)
     }
     catch(error){
       console.log("error")
@@ -310,6 +315,8 @@ function addForm(e){
   handleCloseDir()
   setAddButton(false)
   setAddFav(null)
+  setSearchFavorite('')
+  
   
 
 }
